@@ -33,6 +33,29 @@ Im Browser deiner Wahl, gehe zu localhost:8000
 
 ## Pixi JS
 
+- PIXI Application
+
+
+- Pixi Stage
+
+  - alles in der Stage wird in den Canvas gerendert
+
+- Sprites
+
+  - image file
+
+  - tileset
+
+  - texture atlas
+
+- WebGL
+
+  - Sprites need to be converted to textures
+
+  -> texture cache
+
+
+
 - etwas zeichnen
 
 - etwas bewegen

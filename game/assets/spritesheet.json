@@ -2,16 +2,16 @@
 
 "chest.png":
 {
-	"frame": {"x":0,"y":0,"w":20,"h":16},
+	"frame": {"x":0,"y":0,"w":32,"h":26},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":16},
-	"sourceSize": {"w":20,"h":16},
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":26},
+	"sourceSize": {"w":32,"h":26},
 	"anchor": {"x":0.5,"y":0.5}
 },
 "grass_1.png":
 {
-	"frame": {"x":20,"y":0,"w":16,"h":16},
+	"frame": {"x":0,"y":26,"w":16,"h":16},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
@@ -20,7 +20,7 @@
 },
 "house.png":
 {
-	"frame": {"x":36,"y":0,"w":16,"h":16},
+	"frame": {"x":16,"y":26,"w":16,"h":16},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
@@ -29,20 +29,20 @@
 },
 "llama_one.png":
 {
-	"frame": {"x":0,"y":16,"w":33,"h":64},
+	"frame": {"x":0,"y":42,"w":28,"h":63},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":33,"h":64},
-	"sourceSize": {"w":33,"h":64},
+	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":63},
+	"sourceSize": {"w":28,"h":63},
 	"anchor": {"x":0.5,"y":0.5}
 },
 "slime.png":
 {
-	"frame": {"x":33,"y":16,"w":16,"h":14},
+	"frame": {"x":0,"y":105,"w":32,"h":28},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":14},
-	"sourceSize": {"w":16,"h":14},
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":28},
+	"sourceSize": {"w":32,"h":28},
 	"anchor": {"x":0.5,"y":0.5}
 }},
 "animations": {
@@ -52,8 +52,8 @@
 	"version": "1.0",
 	"image": "spritesheet.png",
 	"format": "RGBA8888",
-	"size": {"w":52,"h":80},
+	"size": {"w":32,"h":133},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:30ec39fb87aa11c521e84a92ef0e1d3d:e037205b713d1fd09144ade5ea3f6093:729adc6043343cfda41c447ce8f464d6$"
+	"smartupdate": "$TexturePacker:SmartUpdate:e0421a1542651f05c4e33ba985d1623a:29482fcbd7160f3439bb4b1b3f6ab3aa:729adc6043343cfda41c447ce8f464d6$"
 }
 }

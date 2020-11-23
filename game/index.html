@@ -2,90 +2,31 @@
 <html lang="de">
   <head>
     <meta charset="utf-8">
-    <title>Hallo Welt!</title>
+    <title>Hello Game!</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+
+    <style>
+     body {
+       margin: 0;
+     }
+     canvas {
+       display: block;
+       margin: auto;
+     }
+    </style>
+    <script src="js/pixi.min.js"></script>
+    <script src="js/keyboard.js"></script>
+    <script src="js/hittest.js"></script>
+    <script src="js/contain.js"></script>
   </head>
-  <style>
-   body {
-     margin: 0;
-   }
-  </style>
-  <script src="js/pixi.min.js"></script>
   <body>
     <script type="text/javascript">
-     let loader = PIXI.Loader.shared,
-         resources = PIXI.loader.resources,
-         Sprite = PIXI.Sprite;
-
-     let spritesheet = {};
-     let sprites = {};
-
-     // documentation about PIXI.Application
-     // http://pixijs.download/release/docs/PIXI.Application.html
-     let app = new PIXI.Application({
-       width: 512,         // default: 800
-       height: 512,        // default: 600
-     });
-
-     //app.renderer.backgroundColor = 0x0612ff;
+     let app = new PIXI.Application();
      app.renderer.autoDensity = true;
-     //app.renderer.resize(window.innerWidth, window.innerHeight);
-
+     //app.renderer.backgroundColor = 0x70e000;
      document.body.appendChild(app.view);
 
-     loader
-       .add("assets/cat.png")
-       .add("assets/spritesheet.json");
-
-     loader.load((loader, resources) => {
-       spritesheet = resources["assets/spritesheet.json"].textures;
-
-     })
-
-     loader.onProgress.add((ev) => {
-       console.log('loading ', ev.progress, '%')
-     })
-
-     loader.onComplete.add(() => {
-       sprites.llama = new Sprite(spritesheet["llama_one.png"]);
-       sprites.slime = new Sprite(spritesheet["slime.png"]);
-       sprites.chest = new Sprite(spritesheet["chest.png"]);
-
-       const grassWidth = 16;
-       const columns = app.renderer.width / grassWidth;
-       const bg_container = new PIXI.Container();
-       for (let i = 0; i < columns; i++) {
-         for (let j = 0; j < columns; j++) {
-           let grass = new Sprite(spritesheet["grass_1.png"]);
-           grass.anchor.set(0);
-           grass.x = i * grassWidth;
-           grass.y = j * grassWidth;
-           bg_container.addChild(grass);
-         }
-       }
-       app.stage.addChild(bg_container);
-
-       let x =  (app.renderer.width / 2) - sprites.llama.width / 2;
-       let y =  (app.renderer.height / 2) - sprites.llama.height / 2;
-       sprites.llama.position.set(x, y);
-       app.stage.addChild(sprites.llama);
-
-       sprites.chest.position.set(200, 300);
-       app.stage.addChild(sprites.chest);
-
-
-       const numOfSlimes = 10;
-       for (let i = 0; i < numOfSlimes; i++) {
-         let slime = new Sprite(spritesheet["slime.png"]);
-         slime.anchor.set(0);
-         slime.x = Math.random() * app.renderer.height - slime.width;
-         slime.y = Math.random() * app.renderer.height - slime.height;
-         slime.scale.set(1.5, 1.5);
-         app.stage.addChild(slime);
-       }
-     })
-
-
-
+     console.log("Willkommen, bienvenue, welcome!")
     </script>
   </body>
 </html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <title>Hello Game!</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+
+    <style>
+     body {
+       margin: 0;
+     }
+     canvas {
+       display: block;
+       margin: auto;
+     }
+    </style>
+
+    <script src="../js/pixi.min.js"></script>
+    <script src="../js/keyboard.js"></script>
+    <script src="../js/hittest.js"></script>
+    <script src="../js/contain.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+     let loader = PIXI.Loader.shared,
+         resources = PIXI.Loader.resources,
+         Sprite = PIXI.Sprite;
+
+     let game = {
+       w: 512,
+       h: 512
+     };
+
+     let app = new PIXI.Application({
+       width: game.w,
+       height: game.h,
+     });
+     app.renderer.autoDensity = true;
+     //app.renderer.backgroundColor = 0x70e000;
+     document.body.appendChild(app.view);
+
+     loader
+       .add("../assets/llama_one.png")
+       .load((loader, resources) => {
+         game.llama = new Sprite(resources["../assets/llama_one.png"].texture);
+       })
+
+     loader.onError.add((err) => {
+       console.log(err);
+     })
+
+     loader.onProgress.add((ev) => {
+       console.log(`loading ${ev.progress}%`);
+     })
+
+     loader.onComplete.add(setup);
+
+     function setup() {
+       console.log("Setup!")
+       app.stage.addChild(game.llama);
+     }
+
+    </script>
+  </body>
+</html>

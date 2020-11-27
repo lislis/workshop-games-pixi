@@ -1,0 +1,759 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Spiele machen mit PixiJS</title>
+
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+
+
+    <style>
+     code {
+       background-color: rgba(200, 200, 200, 0.3);
+       padding: 0.05em .2em;
+       border-radius: 2px;
+
+     }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+	<section>
+          <h1>Spiele machen<br> mit PixiJS</h1>
+        </section>
+        <section>
+          <section>
+            <h2>Wer bin ich?</h2>
+            <p class="fragment">Lisa oder lislis</p>
+            <p class="fragment">Creative Technologist</p>
+          </section>
+          <section>
+            <div class="r-stack">
+              <h3>Ich mag Videospiele</h3>
+              <img class="fragment" src="https://raw.githubusercontent.com/lislis/manzana-attack/master/assets/screen.gif" width="400">
+              <img class="fragment" src="https://raw.githubusercontent.com/lislis/creep-mate/master/creep-mate.gif" width="600">
+              <img class="fragment" src="https://raw.githubusercontent.com/lislis/cat-meow/master/cat-meow.gif" width="650">
+              <img class="fragment" src="https://raw.githubusercontent.com/lislis/beyonce-brawles/master/gameplay.gif" width="400">
+            </div>
+          </section>
+        </section>
+	<section>
+          <section>
+            <h2>Spiele machen, aber wie?</h2>
+          </section>
+          <section>
+            <h3>Engines, Frameworks, Plattformen, Sprachen usw</h3>
+            <h1>🙃</h1>
+          </section>
+          <section>
+            <h3>Die ganz großen (2D und 3D)</h3>
+            <ul class="fragment">
+              <li><a href="https://unity.com/">Unity</a></li>
+              <li><a href="https://www.unrealengine.com/en-US/">Unreal</a></li>
+              <li><a href="https://godotengine.org/">Godot</a></li>
+            </ul>
+          </section>
+          <section>
+            <h3>Kleiner und nur 2D</h3>
+            <ul class="fragment">
+              <li><a href="https://love2d.org/">Love2d (Lua)</a></li>
+              <li><a href="https://ggez.rs/">GGEZ (RUST)</a></li>
+              <li><a href="https://www.pygame.org/news">PyGame (Python)</a></li>
+              <li>... und viele mehr!</li>
+            </ul>
+          </section>
+        </section>
+        <section>
+          <h2>Warum JavaScript?</h2>
+          <p class="fragment">JavaScript ist überall und hat eine riesige Community.</p>
+        </section>
+        <section>
+          <h2>Warum PixiJS?</h2>
+          <p class="fragment">PixiJS ist eine der schnellsten WebGL-Rendering-Engines, und beinhaltet nur die Grundbausteine, die wir brauchen.</p>
+        </section>
+        <section>
+          <section>
+            <a href="https://lislis.github.io/workshop-games-pixi/game/game_final.html">Das ist das Spiel, das wir heute machen</a>
+          </section>
+          <section>
+            <h2>Was wir heute besprechen</h2>
+            <ul>
+              <li>Grundlegende Programmierkonzepte</li>
+              <li>JavaScript Syntax</li>
+              <li>Setup und Gameloop</li>
+              <li>Sprites und Texturen</li>
+              <li>Alles in einem Spiel zusammenfügen</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Was wir in Teil 2 besprechen</h2>
+            <ul>
+              <li>Sprites finden oder selber machen</li>
+              <li>Sounds finden oder selber machen und einbauen</li>
+              <li>Eigene Ideen in Gameplay umsetzen</li>
+            </ul>
+          </section>
+        </section>
+        <section>
+          <section>
+            <p>Ihr braucht folgendes:</p>
+            <ul>
+              <li>Einen Texteditor (zB <a href="https://code.visualstudio.com/">VS Code</a>)</li>
+              <li>Einen Browser (zB Firefox)</li>
+              <li>Ein Terminal und ein Webserver (zB mit Python3, bestimmt schon installiert)</li>
+              <li>Den Workshopcode (<a href="https://github.com/lislis/workshop-games-pixi/archive/main.zip">gibt's hier als download</a>, oder hier auf <a href="https://github.com/lislis/workshop-games-pixi">GitHub</a>)</li>
+            </ul>
+          </section>
+          <section>
+            <ul>
+              <li>Entweder das heruntergeladene .zip entpacken oder das Git-Repo clonen</li>
+              <li>Öffnet ein Terminal und <code>cd</code> in den game-Ordner</li>
+              <li>Starte einen Webserver mit <br><code>python3 -m http.server</code></li>
+              <li>Öffne einen Browsertab und gehe zu <em>localhost:8000</em></li>
+              <li>Siehst du ein schwarzes Rechteck? Perfekt!</li>
+            </ul>
+          </section>
+          <section>
+            <ul>
+              <li><em>index.html</em> Datei im <em>game</em>-Ordner in deinem Texteditor.</li>
+              <li>Hier werden wir arbeiten!</li>
+            </ul>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>JavaScript</h2>
+            <p>(und etwas HTML und CSS)</p>
+          </section>
+          <section>
+            <h3>Was sind HTML und CSS?</h3>
+            <p>Sehen wir uns die <em>index.html</em> an!</p>
+          </section>
+          <section>
+            <h3>JavaScript</h3>
+            <p>Die Webkonsole</p>
+            <p class="fragment">Rechsklick "Element untersuchen"</p>
+            <p class="fragment">Strg + Shift + i</p>
+          </section>
+          <section>
+            <h3>JavaScript</h3>
+            <p>Types</p>
+            <pre>
+              <code data-trim data-line-numbers="2|5|8|11">
+// Numbers
+console.log(2, 4.7 + 5, typeof 8);
+
+// Strings
+console.log("hi", "hallo "+ "Welt", typeof "foo");
+
+// Arrays
+console.log([2, 4, "foo"], typeof []);
+
+// Objects
+console.log({x: 3, y: 19}, typeof {});
+              </code></pre>
+            <p></p>
+          </section>
+          <section>
+            <h3>JavaScript</h3>
+            <p>Variablen</p>
+            <pre>
+              <code>
+var fruit = "apple"; // old school
+let fruit2 = "peach";
+const fruit3 = "pineapple";
+
+console.log(fruit, fruit2, fruit3);
+              </code></pre>
+            <p></p>
+          </section>
+          <section>
+            <h3>JavaScript</h3>
+            <p>Arrays</p>
+            <pre>
+              <code>
+let fruits = ["apple", "plum", "pineapple"];
+console.log(fruits.length, fruits[2]);
+              </code></pre>
+            <p></p>
+          </section>
+          <section>
+            <h3>JavaScript</h3>
+            <p>Objekte</p>
+            <pre>
+              <code>
+let fruit = {
+  color: "red",
+  taste: "sweet",
+  name: "apple"
+}
+
+console.log(fruit.color);
+              </code></pre>
+            <p></p>
+          </section>
+          <section>
+            <h3>JavaScript</h3>
+            <p>Funktionen</p>
+            <pre>
+              <code data-trim data-line-numbers="1-4|6-9">
+function sayHello(param) {
+  return "Hello " + param + "!";
+}
+console.log(sayHello("Lisa"));
+
+const sayYo = param => {
+  return `Yo, yo, yo ${ param }!`;
+}
+console.log(sayYo("Verstehbahnhof"));
+              </code></pre>
+            <p></p>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Welcome to the stage!</h2>
+          </section>
+          <section>
+            <p>In <em>assets/</em> liegt das Bild <em>llama_one.png</em></p>
+            <p>Wir wollen Pixi sagen, <br>nimm diese Datei und rendere sie!</p>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2-4|7-10">
+// Abkürzungen für uns
+let loader = PIXI.Loader.shared,
+    resources = PIXI.Loader.resources,
+    Sprite = PIXI.Sprite;
+
+// Globale variable `game` für all unseren Kram
+let game = {
+  w: 512,
+  h: 512
+};
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-noescape>
+let app = new PIXI.Application({
+  width: game.w,
+  height: game.h,
+});
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers="2|3|4,6|5">
+     // Endlich zum Lama!
+     loader
+       .add("assets/llama_one.png") // Hier liegt das Lama
+       .load((loader, resources) => {
+         game.llama = new Sprite(resources["assets/llama_one.png"].texture);
+       })
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers="3-5|7-9|12">
+     // mehr Einblick in was passiert
+
+     loader.onError.add((err) => {
+       console.log(err);
+     })
+
+     loader.onProgress.add((ev) => {
+       console.log(`loading ${ev.progress}%`);
+     })
+
+     // wenn alles fertig ist, rufe diese Funktion auf
+     loader.onComplete.add(setup);
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-noescape>
+          function setup() {
+            console.log("Setup!")
+
+            // Bring das Lama auf die Bühne
+            app.stage.addChild(game.llama);
+          }
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Spritesheets</h2>
+          </section>
+          <section>
+            <p>Anstatt alle Bilder einzeln zu laden,<br> fassen wir sie in einem Spritesheet zusammen.</p>
+          </section>
+          <section>
+            <p>In <em>assets/</em> liegen die Dateien<br>
+              <em>spritesheet.png</em> und <em>spritesheet.json</em></p>
+          </section>
+          <section>
+            <pre><code data-trim>
+     loader
+       .add("assets/spritesheet.json")
+       .load((loader, resources) => {
+         game.spritesheet = resources["assets/spritesheet.json"].textures;
+       })
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="3|4|5">
+     function setup() {
+       console.log("Setup!")
+       game.llama = new Sprite(game.spritesheet["llama_one.png"]);
+       game.llama.anchor.set(0, 0);
+       app.stage.addChild(game.llama);
+     }
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Truhe und Schleim</h2>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2,4,7|3,5,8">
+// in setup()
+game.chest = new Sprite(game.spritesheet["chest.png"]);
+game.slime = new Sprite(game.spritesheet["slime.png"]);
+game.chest.anchor.set(0, 0);
+game.slime.anchor.set(0, 0);
+
+app.stage.addChild(game.chest);
+app.stage.addChild(game.slime);
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim>
+// in setup()
+// Lama in die Mitte
+const llamaCenterX = (game.w / 2) - game.llama.width / 2;
+const llamaCenterY = (game.h / 2) - game.llama.height / 2;
+game.llama.position.set(llamaCenterX, llamaCenterY);
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="3,4|6,7">
+// in setup()
+// Random Positionen für Truhe und Schleim
+game.chest.x = Math.random() * game.w - game.chest.width;
+game.chest.y = Math.random() * game.h - game.chest.height;
+
+game.slime.x = Math.random() * game.w - game.slime.width;
+game.slime.y = Math.random() * game.h - game.slime.height;
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Gras und Loops</h2>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2|4,5|6,8">
+       // in setup()
+       game.grass = new Sprite(game.spritesheet["grass_1.png"]);
+
+       const grassWidth = game.grass.width
+       const columns = game.w / grassWidth;
+       const backgroundContainer = new PIXI.Container();
+
+       app.stage.addChild(backgroundContainer);
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2,8|3|4-7">
+       // in setup()
+       for (let i = 0; i < columns; i++) {
+         let grass = new Sprite(game.spritesheet["grass_1.png"]);
+         grass.anchor.set(0);
+         grass.x = i * grassWidth;
+         grass.y = 0;
+         backgroundContainer.addChild(grass);
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="5,11|9">
+       // in setup()
+       const rows = columns;
+
+       for (let i = 0; i < columns; i++) {
+         for (let j = 0; j < rows; j++) {
+             let grass = new Sprite(game.spritesheet["grass_1.png"]);
+             grass.anchor.set(0);
+             grass.x = i * grassWidth;
+             grass.y = j * grassWidth;
+             backgroundContainer.addChild(grass);
+         }
+       }
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Bewegung!</h2>
+          </section>
+          <section>
+            <h2>Der Gameloop</h2>
+            <p>Eine Funktion, die kontinuierlich aufgerufen wird<br>(etwa 60 mal pro Sekunde)</p>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+// letzte Zeile in setup()
+app.ticker.add(delta => gameLoop(delta));
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+function gameLoop(delta) {
+  game.llama.x += 1;
+}
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+// in setup
+game.llama.vx = 0;
+game.llama.vy = 0;
+
+// in gameloop
+game.llama.x += game.llama.vx;
+game.llama.y += game.llama.vy;
+            </code></pre>
+          </section>
+          <section>
+            <h2>Keyboard</h2>
+            <p>Sehen wir uns die Datei <em>js/keyboard.js</em> an.</p>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+       // in setup()
+
+       let left = keyboard("ArrowLeft"),
+           up = keyboard("ArrowUp"),
+           right = keyboard("ArrowRight"),
+           down = keyboard("ArrowDown");
+
+            </code></pre>
+            <p><small>-> <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values">Liste mit gültigen Werten auf MDN</a></small></p>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="3-6|8-12">
+       // in setup()
+
+       left.press = () => {
+         game.llama.vx = -5;
+         game.llama.vy = 0;
+       };
+
+       left.release = () => {
+         if (!right.isDown && game.llama.vy === 0) {
+           game.llama.vx = 0;
+         }
+       };
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Mehr Schleim!</h2>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+       let game = {
+         w: 512,
+         h: 512,
+         slimes: [],
+         numberOfSlimes: 10
+       };
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers="3,4|6|7|8|9,10|11|12">
+       // in setup()
+
+       const slimeContainer = new PIXI.Container();
+       app.stage.addChild(slimeContainer);
+
+       for (let i = 0; i < game.numberOfSlimes; i++) {
+         let slime = new Sprite(game.spritesheet["slime.png"]);
+         slime.anchor.set(0, 0);
+         slime.x = Math.random() * game.w - slime.width;
+         slime.y = Math.random() * game.h - slime.height;
+         game.slimes.push(slime);
+         slimeContainer.addChild(slime);
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2-5|8-10">
+       // in gameLoop()
+       game.slimes.forEach(slime => {
+         slime.x += getRandomArbitrary(-2, 2);
+         slime.y += getRandomArbitrary(-2, 2);
+       });
+
+       // ans Ende
+       function getRandomArbitrary(min, max) {
+         return Math.random() * (max - min) + min;
+       }
+          </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Hit!</h2>
+          </section>
+          <section>
+            <h2>Kollisionserkennung</h2>
+            <p>Wann überlappen sich Rechtecke?</p>
+          </section>
+          <section>
+            <p>Sehen wir uns die Datei <em>js/hittest.js</em> an.</p>
+          </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers>
+       // in gameloop(), in forEach loop der slimes
+
+       if(hitTestRectangle(game.llama, slime)) {
+         console.log("HIT");
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2|5-7">
+       // in gameloop()
+       let llamaHit = false;
+
+       // im forEach loop der slimes
+       if(hitTestRectangle(game.llama, slime)) {
+         llamaHit = true;
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+       // in gameloop()
+       if(llamaHit) {
+         game.llama.alpha = 0.5;
+       } else {
+         game.llama.alpha = 1;
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+       // in gameloop()
+       if (hitTestRectangle(game.llama, game.chest)) {
+         game.chest.visible = false
+       }
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Statusleiste</h2>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="">
+       // in setup()
+       game.healthBar = new PIXI.Container();
+       game.healthBar.position.set(game.w - 150, 20)
+       app.stage.addChild(game.healthBar);
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="1-5|7-11|13">
+       let innerBar = new PIXI.Graphics();
+       innerBar.beginFill(0x000000);
+       innerBar.drawRect(0, 0, 128, 8);
+       innerBar.endFill();
+       game.healthBar.addChild(innerBar);
+
+       let outerBar = new PIXI.Graphics();
+       outerBar.beginFill(0xFF3300);
+       outerBar.drawRect(0, 0, 128, 8);
+       outerBar.endFill();
+       game.healthBar.addChild(outerBar);
+
+       game.healthBar.outer = outerBar;
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers>
+       // in gameloop()
+       // in if(llamaHit)
+
+       game.healthBar.outer.width -= 1;
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Game State</h2>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="3-6|8-10">
+       // in gameloop()
+
+       if (hitTestRectangle(game.llama, game.chest)) {
+         game.chest.visible = false;
+         console.log("WIN");
+       }
+
+       if (game.healthBar.outer.width < 0) {
+          console.log("LOSE");
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="9-12">
+     let game = {
+       w: 512,
+       h: 512,
+       llama: {},
+       chest: {},
+       numberOfSlimes: 10,
+       slimes: [],
+       healthBar: {},
+       state: undefined,
+       gameScene: undefined,
+       gameOverScene: undefined,
+       message: {}
+     };
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="">
+       // in setup()
+       game.gameScene = new PIXI.Container();
+       app.stage.addChild(game.gameScene);
+
+       game.gameOverScene = new PIXI.Container();
+       app.stage.addChild(game.gameOverScene);
+
+       game.gameOverScene.visible = false;
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="">
+       // in setup()
+       let style = new PIXI.TextStyle({
+         fontFamily: "Arial",
+         fontSize: 64,
+         fill: "white"
+       });
+       game.message = new PIXI.Text("The End!", style);
+       game.message.x = 120;
+       game.message.y = game.h / 2 - 64;
+       game.gameOverScene.addChild(game.message);
+            </code></pre>
+          </section>
+          <section>
+            <p>Alle <code>app.stage.addChild</code> in<br><code>game.gameScene.addChild</code> ändern.</p>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="1|3-5|7-10">
+       // gameLoop() in play() umbenennen!!
+
+       function gameLoop(delta) {
+         game.state(delta);
+       }
+
+       function end() {
+         game.gameScene.visible = false;
+         game.gameOverScene.visible = true;
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2">
+       // am Ende von setup()
+       game.state = play;
+       app.ticker.add(delta => gameLoop(delta));
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2,3,7,8">
+       if (hitTestRectangle(game.llama, game.chest)) {
+         game.state = end;
+         game.message.text = "You won!";
+       }
+
+       if (game.healthBar.outer.width < 0) {
+         game.state = end;
+         game.message.text = "You lost!";
+       }
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <h1>Ein Spiel!</h1>
+        </section>
+        <section>
+          <section>
+            <h2>Woran könnte man noch arbeiten?</h2>
+          </section>
+          <section>
+            <h3>Nicht über den Rand laufen</h3>
+            <p>Das Lama kann die Bühne verlassen.</p>
+            <p>In <em>js/contain.js</em> gibt es eine Funktion dafür.</p>
+          </section>
+          <section>
+            <h3>Random grass</h3>
+            <p>Es ist fast zu viel Gras.</p>
+            <p>Färbe die Bühne grün und nutze Math.random() (oder andere Logik!) um nur stellenweise Gras zu rendern.</p>
+          </section>
+          <section>
+            <h3>Kein random Schleim</h3>
+            <p>Lass die Schleime entlang der x- oder y-Achse laufen.</p>
+            <p>Nutze die <em>contain()</em> Funktion um an Wänden die Richtung zu ändern.</p>
+          </section>
+          <section>
+            <h3>Truhe tragen</h3>
+            <p>Anstatt direkt zu gewinnen, man die Truhe berührt, muss man sie zu einem bestimmen Ort tragen.</p>
+            <p>Wenn das Lama die Truhe berührt, "läuft" die Truhe mit dem Lama mit.</p>
+          </section>
+          <section>
+            <h3>Truhe tragen pt2</h3>
+            <p>Zeichne ein "Loch" mit <em>drawRect()</em>. Erst wenn du Truhe zum Loch getragen hast, ändert sich der State.</p>
+          </section>
+        </section>
+        <section>
+          <h2>Wir sehen uns zu Teil 2!</h2>
+          <p class="fragment">Mit Soundeffekten, eigenen Sprites und Animationen!</p>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+     // More info about initialization & config:
+     // - https://revealjs.com/initialization/
+     // - https://revealjs.com/config/
+     Reveal.initialize({
+       hash: true,
+
+       // Learn about plugins: https://revealjs.com/plugins/
+       plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+     });
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="utf-8">
-    <title>The final game!</title>
+    <title>Hello Game!</title>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
 
     <style>
@@ -14,27 +14,24 @@
        margin: auto;
      }
     </style>
-    <script src="js/pixi.min.js"></script>
-    <script src="js/keyboard.js"></script>
-    <script src="js/hittest.js"></script>
-    <script src="js/contain.js"></script>
+
+    <script src="../js/pixi.min.js"></script>
+    <script src="../js/keyboard.js"></script>
+    <script src="../js/hittest.js"></script>
+    <script src="../js/contain.js"></script>
   </head>
   <body>
     <script type="text/javascript">
      let loader = PIXI.Loader.shared,
-         resources = PIXI.loader.resources,
-         Sprite = PIXI.Sprite,
-         Text = PIXI.Text,
-         TextStyle = PIXI.TextStyle;
+         resources = PIXI.Loader.resources,
+         Sprite = PIXI.Sprite;
 
      let game = {
        w: 512,
        h: 512,
-       llama: {},
-       chest: {},
-       numberOfSlimes: 10,
        slimes: [],
-       healthBar: {},
+       numberOfSlimes: 10,
+       healthbar: {},
        state: undefined,
        gameScene: undefined,
        gameOverScene: undefined,
@@ -43,17 +40,17 @@
 
      let app = new PIXI.Application({
        width: game.w,
-       height: game.h,
+       height: game.h
      });
      app.renderer.autoDensity = true;
-     app.renderer.backgroundColor = 0x70e000;
+     //app.renderer.backgroundColor = 0x70e000;
      document.body.appendChild(app.view);
 
-     loader.add("assets/spritesheet.json");
-
-     loader.load((loader, resources) => {
-       game.spritesheet = resources["assets/spritesheet.json"].textures;
-     })
+     loader
+       .add("../assets/spritesheet.json")
+       .load((loader, resources) => {
+         game.spritesheet = resources["../assets/spritesheet.json"].textures;
+       })
 
      loader.onError.add((err) => {
        console.log(err);
@@ -65,7 +62,7 @@
 
      loader.onComplete.add(setup);
 
-     function setup(loader, resources) {
+     function setup() {
        game.gameScene = new PIXI.Container();
        app.stage.addChild(game.gameScene);
 
@@ -74,48 +71,55 @@
 
        game.gameOverScene.visible = false;
 
-       let style = new TextStyle({
+       let style = new PIXI.TextStyle({
          fontFamily: "Arial",
          fontSize: 64,
          fill: "white"
        });
-       game.message = new Text("The End!", style);
+       game.message = new PIXI.Text("The End!", style);
        game.message.x = 120;
-       game.message.y = app.renderer.height / 2 - 64;
+       game.message.y = game.h / 2 - 64;
        game.gameOverScene.addChild(game.message);
 
-       const grassWidth = 16;
+       game.grass = new Sprite(game.spritesheet["grass_1.png"]);
+       const grassWidth = game.grass.width
        const columns = game.w / grassWidth;
+       const rows = columns;
        const backgroundContainer = new PIXI.Container();
+       game.gameScene.addChild(backgroundContainer);
+
        for (let i = 0; i < columns; i++) {
-         for (let j = 0; j < columns; j++) {
-           if (Math.random() > 0.9) {
+         for (let j = 0; j < rows; j++) {
              let grass = new Sprite(game.spritesheet["grass_1.png"]);
              grass.anchor.set(0);
              grass.x = i * grassWidth;
              grass.y = j * grassWidth;
              backgroundContainer.addChild(grass);
-           }
          }
        }
-       game.gameScene.addChild(backgroundContainer);
 
-       //const numOfSlimes = 10;
+       game.chest = new Sprite(game.spritesheet["chest.png"]);
+       game.chest.anchor.set(0, 0);
+       game.chest.x = Math.random() * game.w - game.chest.width;
+       game.chest.y = Math.random() * game.h - game.chest.height;
+       game.gameScene.addChild(game.chest);
+
        const slimeContainer = new PIXI.Container();
+       game.gameScene.addChild(slimeContainer);
        for (let i = 0; i < game.numberOfSlimes; i++) {
          let slime = new Sprite(game.spritesheet["slime.png"]);
-         slime.anchor.set(0);
-         slime.x = Math.random() * app.renderer.width - slime.width;
-         slime.y = Math.random() * app.renderer.height - slime.height;
-         game.slimes.push(slime)
+         slime.anchor.set(0, 0);
+         slime.x = Math.random() * game.w - slime.width;
+         slime.y = Math.random() * game.h - slime.height;
+         game.slimes.push(slime);
          slimeContainer.addChild(slime);
        }
-       game.gameScene.addChild(slimeContainer);
 
        game.llama = new Sprite(game.spritesheet["llama_one.png"]);
-       let x =  (game.w / 2) - game.llama.width / 2;
-       let y =  (game.h / 2) - game.llama.height / 2;
-       game.llama.position.set(x, y);
+       game.llama.anchor.set(0, 0);
+       const llamaCenterX = (game.w / 2) - game.llama.width / 2;
+       const llamaCenterY = (game.h / 2) - game.llama.height / 2;
+       game.llama.position.set(llamaCenterX, llamaCenterY);
        game.llama.vx = 0;
        game.llama.vy = 0;
        game.gameScene.addChild(game.llama);
@@ -166,11 +170,6 @@
          }
        };
 
-       game.chest = new Sprite(game.spritesheet["chest.png"]);
-       game.chest.x = Math.random() * game.w - game.chest.width;
-       game.chest.y = Math.random() * game.h - game.chest.height;
-       game.gameScene.addChild(game.chest);
-
        game.healthBar = new PIXI.Container();
        game.healthBar.position.set(game.w - 150, 20)
        game.gameScene.addChild(game.healthBar);
@@ -197,12 +196,16 @@
        game.state(delta);
      }
 
+     function end() {
+       game.gameScene.visible = false;
+       game.gameOverScene.visible = true;
+     }
+
      function play(delta) {
        let llamaHit = false;
+
        game.llama.x += game.llama.vx;
        game.llama.y += game.llama.vy;
-
-       contain(game.llama, {x: 16, y: 32, width: 530, height: 545});
 
        game.slimes.forEach(slime => {
          slime.x += getRandomArbitrary(-2, 2);
@@ -221,7 +224,6 @@
        }
 
        if (hitTestRectangle(game.llama, game.chest)) {
-         //game.chest.visible = false
          game.state = end;
          game.message.text = "You won!";
        }
@@ -230,11 +232,6 @@
          game.state = end;
          game.message.text = "You lost!";
        }
-     }
-
-     function end() {
-       game.gameScene.visible = false;
-       game.gameOverScene.visible = true;
      }
 
      function getRandomArbitrary(min, max) {

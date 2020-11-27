@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <title>Hello Game!</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+
+    <style>
+     body {
+       margin: 0;
+     }
+     canvas {
+       display: block;
+       margin: auto;
+     }
+    </style>
+
+    <script src="../js/pixi.min.js"></script>
+    <script src="../js/keyboard.js"></script>
+    <script src="../js/hittest.js"></script>
+    <script src="../js/contain.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+     let loader = PIXI.Loader.shared,
+         resources = PIXI.Loader.resources,
+         Sprite = PIXI.Sprite;
+
+     let game = {
+       w: 512,
+       h: 512,
+       slimes: [],
+       numberOfSlimes: 10
+     };
+
+     let app = new PIXI.Application({
+       width: game.w,
+       height: game.h
+     });
+     app.renderer.autoDensity = true;
+     //app.renderer.backgroundColor = 0x70e000;
+     document.body.appendChild(app.view);
+
+     loader
+       .add("../assets/spritesheet.json")
+       .load((loader, resources) => {
+         game.spritesheet = resources["../assets/spritesheet.json"].textures;
+       })
+
+     loader.onError.add((err) => {
+       console.log(err);
+     })
+
+     loader.onProgress.add((ev) => {
+       console.log(`loading ${ev.progress}%`);
+     })
+
+     loader.onComplete.add(setup);
+
+     function setup() {
+       console.log("Setup!")
+
+       game.grass = new Sprite(game.spritesheet["grass_1.png"]);
+       const grassWidth = game.grass.width
+       const columns = game.w / grassWidth;
+       const rows = columns;
+       const backgroundContainer = new PIXI.Container();
+       app.stage.addChild(backgroundContainer);
+
+       for (let i = 0; i < columns; i++) {
+         for (let j = 0; j < rows; j++) {
+             let grass = new Sprite(game.spritesheet["grass_1.png"]);
+             grass.anchor.set(0);
+             grass.x = i * grassWidth;
+             grass.y = j * grassWidth;
+             backgroundContainer.addChild(grass);
+         }
+       }
+
+       game.chest = new Sprite(game.spritesheet["chest.png"]);
+       game.chest.anchor.set(0, 0);
+       game.chest.x = Math.random() * game.w - game.chest.width;
+       game.chest.y = Math.random() * game.h - game.chest.height;
+       app.stage.addChild(game.chest);
+
+       const slimeContainer = new PIXI.Container();
+       app.stage.addChild(slimeContainer);
+       for (let i = 0; i < game.numberOfSlimes; i++) {
+         let slime = new Sprite(game.spritesheet["slime.png"]);
+         slime.anchor.set(0, 0);
+         slime.x = Math.random() * game.w - slime.width;
+         slime.y = Math.random() * game.h - slime.height;
+         game.slimes.push(slime);
+         slimeContainer.addChild(slime);
+       }
+
+       game.llama = new Sprite(game.spritesheet["llama_one.png"]);
+       game.llama.anchor.set(0, 0);
+       const llamaCenterX = (game.w / 2) - game.llama.width / 2;
+       const llamaCenterY = (game.h / 2) - game.llama.height / 2;
+       game.llama.position.set(llamaCenterX, llamaCenterY);
+       game.llama.vx = 0;
+       game.llama.vy = 0;
+       app.stage.addChild(game.llama);
+
+       let left = keyboard("ArrowLeft"),
+           up = keyboard("ArrowUp"),
+           right = keyboard("ArrowRight"),
+           down = keyboard("ArrowDown");
+
+       left.press = () => {
+         game.llama.vx = -5;
+         game.llama.vy = 0;
+       };
+
+       left.release = () => {
+         if (!right.isDown && game.llama.vy === 0) {
+           game.llama.vx = 0;
+         }
+       };
+
+       up.press = () => {
+         game.llama.vy = -5;
+         game.llama.vx = 0;
+       };
+       up.release = () => {
+         if (!down.isDown && game.llama.vx === 0) {
+           game.llama.vy = 0;
+         }
+       };
+
+       right.press = () => {
+         game.llama.vx = 5;
+         game.llama.vy = 0;
+       };
+       right.release = () => {
+         if (!left.isDown && game.llama.vy === 0) {
+           game.llama.vx = 0;
+         }
+       };
+
+       down.press = () => {
+         game.llama.vy = 5;
+         game.llama.vx = 0;
+       };
+       down.release = () => {
+         if (!up.isDown && game.llama.vx === 0) {
+           game.llama.vy = 0;
+         }
+       };
+
+       app.ticker.add(delta => gameLoop(delta));
+     }
+
+     function gameLoop(delta) {
+       let llamaHit = false;
+
+       game.llama.x += game.llama.vx;
+       game.llama.y += game.llama.vy;
+
+       game.slimes.forEach(slime => {
+         slime.x += getRandomArbitrary(-2, 2);
+         slime.y += getRandomArbitrary(-2, 2);
+
+         if(hitTestRectangle(game.llama, slime)) {
+           llamaHit = true;
+         }
+       });
+
+       if(llamaHit) {
+         game.llama.alpha = 0.5;
+       } else {
+         game.llama.alpha = 1;
+       }
+
+       if (hitTestRectangle(game.llama, game.chest)) {
+         game.chest.visible = false
+       }
+     }
+
+     function getRandomArbitrary(min, max) {
+       return Math.random() * (max - min) + min;
+     }
+    </script>
+  </body>
+</html>

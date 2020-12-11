@@ -22,10 +22,53 @@
   </head>
   <body>
     <script type="text/javascript">
-     let app = new PIXI.Application();
+     // Abkürzungen für uns
+     let loader = PIXI.Loader.shared,
+         resources = PIXI.Loader.resources,
+         Sprite = PIXI.Sprite;
+
+     // Globale variable `game` für all unseren Kram
+     let game = {
+       w: 512,
+       h: 512
+     };
+
+     //let app = new PIXI.Application()
+     let app = new PIXI.Application({
+       width: game.w,
+       height: game.h,
+     });
      app.renderer.autoDensity = true;
      //app.renderer.backgroundColor = 0x70e000;
      document.body.appendChild(app.view);
+
+     loader
+       .add("assets/spritesheet.json")
+       .load((loader, resources) => {
+         game.spritesheet = resources["assets/spritesheet.json"].textures;
+       })
+
+     // mehr Einblick in was passiert
+     loader.onError.add((err) => {
+       console.log(err);
+     })
+
+     loader.onProgress.add((ev) => {
+       console.log(`loading ${ev.progress}%`);
+     })
+
+     // wenn alles fertig ist, rufe diese Funktion auf
+     loader.onComplete.add(setup);
+
+     function setup() {
+       console.log("Setup!")
+
+       game.llama = new Sprite(game.spritesheet["llama_one.png"]);
+       game.llama.anchor.set(0, 0);
+       // Bring das Lama auf die Bühne
+       app.stage.addChild(game.llama);
+     }
+
 
      console.log("Willkommen, bienvenue, welcome!")
     </script>

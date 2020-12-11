@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <title>Hello Game 2!</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+
+    <style>
+     body {
+       margin: 0;
+     }
+     canvas {
+       display: block;
+       margin: auto;
+     }
+    </style>
+
+    <script src="js/pixi.min.js"></script>
+    <script src="js/howler.min.js"></script>
+    <script src="js/keyboard.js"></script>
+    <script src="js/hittest.js"></script>
+    <script src="js/contain.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+     let loader = PIXI.Loader.shared,
+         resources = PIXI.Loader.resources,
+         Texture = PIXI.Texture,
+         Sprite = PIXI.Sprite,
+         AnimatedSprite = PIXI.AnimatedSprite;
+
+     let game = {
+       w: 512,
+       h: 512,
+       textures: {},
+       ghostTextures: [],
+       ghosts: [],
+       score: 0,
+     };
+
+     let app = new PIXI.Application({
+       width: game.w,
+       height: game.h,
+     });
+     app.renderer.autoDensity = true;
+     document.body.appendChild(app.view);
+
+     loader
+       .add("assets/llama_down.png")
+       .load((loader, resources) => {
+         game.textures.llamaDown = resources["assets/llama_down.png"].texture;
+       })
+     loader.onError.add((err) => {
+       console.log(err);
+     })
+     loader.onProgress.add((ev) => {
+       console.log(`loading ${ev.progress}%`);
+     })
+     loader.onComplete.add(setup);
+
+     function setup() {
+       console.log("Setup!")
+
+       game.llama = new Sprite(game.textures.llamaDown);
+       game.llama.anchor.set(0, 0);
+       game.llama.position.set(game.w / 2 - game.llama.width / 2,
+                               game.h / 2 - game.llama.height / 2);
+       game.llama.vy = 0;
+       app.stage.addChild(game.llama);
+
+       game.state = play;
+       app.ticker.add(delta => gameLoop(delta));
+     }
+
+     function gameLoop(delta) {
+       game.state(delta)
+     }
+
+     function play(delta) {
+       game.llama.y += game.llama.vy;
+       if (game.llama.y > game.targetY - 5
+           && game.llama.y < game.targetY + 5) {
+         game.llama.vy = 0;
+       }
+     }
+
+     function setLlamaTarget(event) {
+       let p = event.data.global;
+       game.targetY = p.y;
+
+       if (game.llama.y < game.targetY) {
+         game.llama.vy = 3;
+       } else if (game.llama.y > game.targetY) {
+         game.llama.vy = -3;
+       }
+     }
+
+     app.renderer.plugins.interaction.on('pointerdown', setLlamaTarget);
+    </script>
+  </body>
+</html>

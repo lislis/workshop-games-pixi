@@ -32,40 +32,58 @@
         </section>
         <section>
           <section>
-            <h2>Texturen und Sprites</h2>
+            <p><a href="/game2/final_game.html">Dieses Spiel machen wir heute!</a></p>
           </section>
           <section>
-            <p>Texturen sind geladene Bilddateien, die schon für WebGL aufbereitet sind.</p>
-            <p>Sprites sind Bildobjekte, die unter anderem eine Textur als Eigenshcaft haben.</p>
+            <p>In der <code>index.html</code> ist schon einiges vorgegeben.</p>
           </section>
           <section>
-           <pre><code data-trim data-line-numbers="">
-
-            </code></pre>
+            <p>Das Lama wird geladen und in die Mitte des Screens gesetzt.</p>
+            <p class="fragment">Wenn wir über oder unter dem Lama klicken, läuft es zu diesem Punkt und ebleibt dann dort stehen.</p>
+            <p class="fragment">Nach links oder rechts bewegt es sicht nicht.</p>
           </section>
         </section>
-
         <section>
           <section>
             <h2>Texturen und Sprites</h2>
           </section>
           <section>
             <p>Texturen sind geladene Bilddateien, die schon für WebGL aufbereitet sind.</p>
-            <p>Sprites sind Bildobjekte, die unter anderem eine Textur als Eigenshcaft haben.</p>
+            <p>Sprites sind Bildobjekte, die unter anderem eine Textur als Eigenschaft haben.</p>
           </section>
           <section>
-            <pre><code data-trim data-line-numbers="">
-
+            <p>Laden wir eine weiteres Lama-Textur</p>
+           <pre><code data-trim data-line-numbers="3,6">
+       loader
+         .add("assets/llama_down.png")
+         .add("assets/llama_up.png")
+         .load((loader, resources) => {
+           game.textures.llamaDown = resources["assets/llama_down.png"].texture;
+           game.textures.llamaUp = resources["assets/llama_up.png"].texture;
+         })
+            </code></pre>
+          </section>
+          <section>
+            <p>Und tauschen sie im Lama-Sprite aus</p>
+            <pre><code data-trim data-line-numbers="4,7">
+       // in setLlamaTarget
+       if (game.llama.y < game.targetY) {
+         game.llama.vy = 3;
+         game.llama.texture = game.textures.llamaDown;
+       } else if (game.llama.y > game.targetY) {
+         game.llama.vy = -3;
+         game.llama.texture = game.textures.llamaUp;
+       }
             </code></pre>
           </section>
         </section>
-
         <section>
           <section>
             <h2>Texturen finden</h2>
           </section>
           <section>
             <p><a href="https://opengameart.org/">https://opengameart.org/</a></p>
+            <p><a href="https://itch.io/game-assets/tag-textures">https://itch.io/</a> (nicht alle sind kostenlos)</p>
           </section>
           <section>
             <h2>Texturen selber machen!</h2>
@@ -77,19 +95,102 @@
 
         <section>
           <section>
-            <h2>Texturen austauschen</h2>
+            <h2>Sprites animieren</h2>
           </section>
           <section>
+            <p>Sprites können animaiert werden, sie brauchen dafür eine Sequenz aus Texturen.</p>
+            <p class="fragment">In <code>assets/ghost/</code> sehen wir die Einzelteile der Animation und die Sequenz als Spritesheet.</p>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="4|8-11">
+     loader
+       .add("assets/llama_up.png")
+       .add("assets/llama_down.png")
+       .add("assets/ghost/ghost_spritesheet.json")
+       .load((loader, resources) => {
+         game.textures.llamaUp = resources["assets/llama_up.png"].texture;
+         game.textures.llamaDown = resources["assets/llama_down.png"].texture;
+         for (let i = 0; i < 5; i++) {
+           const texture = Texture.from(`ghost_${ i + 1}.png`);
+           game.ghostTextures.push(texture);
+         }
+       })
 
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="2,15|3,4|5-8|10,11|13,14">
+       // in setup()
+       for (let i = 0; i < 5; i++) {
+         const ghost = new AnimatedSprite(game.ghostTextures);
+         ghost.anchor.set(0,0);
+         ghost.x = Math.random() > 0.5 ? 0 : (game.w - ghost.width);
+         ghost.y = Math.random() * (game.h - ghost.height);
+         ghost.vx = Math.random() > 0.5 ? -1 : 1;
+         ghost.vy = 0;
+
+         ghost.animationSpeed = 0.1;
+         ghost.gotoAndPlay(Math.random() * 5);
+
+         game.ghosts.push(ghost);
+         app.stage.addChild(ghost);
+       }
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="">
+       # in play()
+       game.ghosts.forEach((ghost) => {
+         updateGhost(ghost);
+       });
+            </code></pre>
+          </section>
+          <section>
+            <pre><code data-trim data-line-numbers="1,10|2,3|5-9">
+
+       function updateGhost(ghost) {
+         ghost.x += ghost.vx;
+         ghost.y += ghost.vy;
+
+         if (ghost.x < - (ghost.width / 2)) {
+           ghost.vx = 1;
+         } else if (ghost.x > (game.w - (ghost.width / 2))) {
+           ghost.vx = -1;
+         }
+       }
+            </code></pre>
           </section>
         </section>
 
         <section>
           <section>
-            <h2>Texturen animieren</h2>
+            <h2>Mehr Gameplay</h2>
           </section>
           <section>
+            <pre><code data-trim data-line-numbers="">
+         // in updateGhost
+         if (hitTestRectangle(game.llama, ghost)) {
+           let yDifference = game.llama.y - ghost.y;
+           ghost.vy = yDifference >= 0 ? -3 : 3;
+         }
+            </code></pre>
+          </section>
 
+          <section>
+            <pre><code data-trim data-line-numbers="2-5|6|8-12">
+         // in updateGhost
+         let container = {x: -ghost.width,
+                        y: -(ghost.height / 2),
+                        width: game.w + (ghost.width / 2),
+                        height: game.h + (ghost.height /2)};
+         let direction = contain(ghost, container);
+
+         if (direction == 'top') {
+           ghost.vy = 2;
+         } else if (direction == 'bottom') {
+           ghost.vy = -2;
+         }
+            </code></pre>
           </section>
         </section>
 
@@ -112,9 +213,80 @@
             <p><a hef="https://howlerjs.com/">https://howlerjs.com</a></p>
             <p>als Soundplayer für unser Spiel.</p>
           </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers="">
+
+         game.backgroundSound = new Howl({
+           src: ['assets/backgroundsound.mp3'],
+           autoplay: false,
+           loop: true,
+           volume: 0.5
+         });
+
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers="">
+            // in setup()
+            // kurz vor app.ticket.add()
+            game.backgroundSound.play();
+            </code></pre>
+          </section>
         </section>
+
         <section>
-          <h2>Das war's!</h2>
+          <section>
+            <h2>Wie macht das Lama?</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers="">
+
+     game.llamaSound = new Howl({
+       src: ['assets/llama_maeh.mp3']
+     });
+
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-line-numbers="">
+            // in setup()
+            game.llama.interactive = true;
+            game.llama.buttonMode = true;
+            game.llama.on('pointertap', () => {
+              game.llamaSound.play();
+            });
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Was kann man noch machen?</h2>
+          </section>
+          <section>
+            <h3>Mäh!</h3>
+            <p>Lass das Lama auch blöken, wenn es auf einen Geist trifft!</p>
+            <p>Finde eine Logik, damit der Sound nicht mehrfach abgespielt wird.</p>
+          </section>
+          <section>
+            <h3>Score!</h3>
+            <p>Füge eine Variable hinzu, die hochzählt, wenn du einen Geist erschreckst!</p>
+          </section>
+          <section>
+            <h3>Kombiniere Elemente aus Teil 1</h3>
+            <p>Vllt muss das Lama eine Truhe tragen aber verliert sie, wenn sie auf einen Geist trifft?</p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Das war's!</h2>
+            <p>Viel Spaß beim Spiele machen!</p>
+          </section>
         </section>
       </div>
     </div>

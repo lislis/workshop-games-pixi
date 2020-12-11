@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="utf-8">
-    <title>Hello Game!</title>
+    <title>Hello Game 2!</title>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
 
     <style>
@@ -16,6 +16,7 @@
     </style>
 
     <script src="../js/pixi.min.js"></script>
+    <script src="../js/howler.min.js"></script>
     <script src="../js/keyboard.js"></script>
     <script src="../js/hittest.js"></script>
     <script src="../js/contain.js"></script>
@@ -24,78 +25,140 @@
     <script type="text/javascript">
      let loader = PIXI.Loader.shared,
          resources = PIXI.Loader.resources,
-         Sprite = PIXI.Sprite;
+         Texture = PIXI.Texture,
+         Sprite = PIXI.Sprite,
+         AnimatedSprite = PIXI.AnimatedSprite;
 
      let game = {
        w: 512,
-       h: 512
+       h: 512,
+       textures: {},
+       ghostTextures: [],
+       ghosts: [],
+       score: 0,
      };
+
+     game.backgroundSound = new Howl({
+       src: ['../assets/backgroundsound.mp3'],
+       autoplay: false,
+       loop: true,
+       volume: 0.5
+     });
 
      let app = new PIXI.Application({
        width: game.w,
        height: game.h,
      });
      app.renderer.autoDensity = true;
-     //app.renderer.backgroundColor = 0x70e000;
      document.body.appendChild(app.view);
 
      loader
-       .add("../assets/spritesheet.json")
+       .add("../assets/llama_up.png")
+       .add("../assets/llama_down.png")
+       .add("../assets/ghost/ghost_spritesheet.json")
        .load((loader, resources) => {
-         game.spritesheet = resources["../assets/spritesheet.json"].textures;
+         game.textures.llamaUp = resources["../assets/llama_up.png"].texture;
+         game.textures.llamaDown = resources["../assets/llama_down.png"].texture;
+         for (let i = 0; i < 5; i++) {
+           const texture = Texture.from(`ghost_${ i + 1}.png`);
+           game.ghostTextures.push(texture);
+         }
        })
 
      loader.onError.add((err) => {
        console.log(err);
      })
-
      loader.onProgress.add((ev) => {
        console.log(`loading ${ev.progress}%`);
      })
-
      loader.onComplete.add(setup);
 
      function setup() {
        console.log("Setup!")
 
-       game.grass = new Sprite(game.spritesheet["grass_1.png"]);
-       const grassWidth = game.grass.width
-       const columns = game.w / grassWidth;
-       const rows = columns;
-       const backgroundContainer = new PIXI.Container();
-       app.stage.addChild(backgroundContainer);
-
-       for (let i = 0; i < columns; i++) {
-         for (let j = 0; j < rows; j++) {
-             let grass = new Sprite(game.spritesheet["grass_1.png"]);
-             grass.anchor.set(0);
-             grass.x = i * grassWidth;
-             grass.y = j * grassWidth;
-             backgroundContainer.addChild(grass);
-         }
+       for (let i = 0; i < 5; i++) {
+         const ghost = new AnimatedSprite(game.ghostTextures);
+         ghost.anchor.set(0,0);
+         ghost.x = Math.random() > 0.5 ? 0 : (game.w - ghost.width);
+         ghost.y = Math.random() * (game.h - ghost.height);
+         ghost.vx = Math.random() > 0.5 ? -1 : 1;
+         ghost.vy = 0;
+         ghost.animationSpeed = 0.1;
+         ghost.gotoAndPlay(Math.random() * 5);
+         game.ghosts.push(ghost);
+         app.stage.addChild(ghost);
        }
 
-       game.chest = new Sprite(game.spritesheet["chest.png"]);
-       game.chest.anchor.set(0, 0);
-       game.chest.x = Math.random() * game.w - game.chest.width;
-       game.chest.y = Math.random() * game.h - game.chest.height;
-
-       game.slime = new Sprite(game.spritesheet["slime.png"]);
-       game.slime.anchor.set(0, 0);
-       game.slime.x = Math.random() * game.w - game.slime.width;
-       game.slime.y = Math.random() * game.h - game.slime.height;
-
-       app.stage.addChild(game.chest);
-       app.stage.addChild(game.slime);
-
-       game.llama = new Sprite(game.spritesheet["llama_one.png"]);
+       game.llama = new Sprite(game.textures.llamaDown);
        game.llama.anchor.set(0, 0);
-
-       const llamaCenterX = (game.w / 2) - game.llama.width / 2;
-       const llamaCenterY = (game.h / 2) - game.llama.height / 2;
-       game.llama.position.set(llamaCenterX, llamaCenterY);
+       game.llama.position.set(game.w / 2 - game.llama.width / 2,
+                               game.h / 2 - game.llama.height / 2);
+       game.llama.vy = 0;
        app.stage.addChild(game.llama);
+
+       game.state = play;
+       game.backgroundSound.play();
+       app.ticker.add(delta => gameLoop(delta));
      }
+
+     function gameLoop(delta) {
+       game.state(delta)
+     }
+
+     function play(delta) {
+       game.ghosts.forEach((ghost) => {
+         updateGhost(ghost);
+       });
+
+       game.llama.y += game.llama.vy;
+       if (game.llama.y > game.targetY - 5
+           && game.llama.y < game.targetY + 5) {
+         game.llama.vy = 0;
+       }
+     }
+
+     function updateGhost(ghost) {
+       ghost.x += ghost.vx;
+       ghost.y += ghost.vy;
+
+       if (ghost.x < - (ghost.width / 2)) {
+         ghost.vx = 1;
+       } else if (ghost.x > (game.w - (ghost.width / 2))) {
+         ghost.vx = -1;
+       }
+
+       if (hitTestRectangle(game.llama, ghost)) {
+         let yDifference = game.llama.y - ghost.y;
+         ghost.vy = yDifference >= 0 ? -3 : 3;
+       }
+
+       let container = {x: -ghost.width,
+                        y: -(ghost.height / 2),
+                        width: game.w + (ghost.width / 2),
+                        height: game.h + (ghost.height /2)};
+       let direction = contain(ghost, container);
+
+       if (direction == 'top') {
+         ghost.vy = 2;
+       } else if (direction == 'bottom') {
+         ghost.vy = -2;
+       }
+     }
+
+     function setLlamaTarget(event) {
+       let p = event.data.global;
+       game.targetY = p.y;
+
+       if (game.llama.y < game.targetY) {
+         game.llama.vy = 3;
+         game.llama.texture = game.textures.llamaDown;
+       } else if (game.llama.y > game.targetY) {
+         game.llama.vy = -3;
+         game.llama.texture = game.textures.llamaUp;
+       }
+     }
+
+     app.renderer.plugins.interaction.on('pointerdown', setLlamaTarget);
     </script>
   </body>
 </html>
